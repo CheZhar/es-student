@@ -1,13 +1,54 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
 
+const uint LED_PIN = 25;
+const uint BUTTON_PIN = 15;
+const uint DEBOUNCE_MS = 20;
+
+bool get_button_debounce(uint pin)
+{
+    // читаем вывод устойчиво к дребезгу
+    bool state = gpio_get(pin);
+    sleep_ms(DEBOUNCE_MS);
+    return state && gpio_get(pin);
+}
+
+void set_led(bool on)
+{
+    gpio_put(LED_PIN, on);
+    printf("led %s\n", on ? "on" : "off");
+}
+
 int main()
 {
+    // включаем стандартный ввод-вывод
     stdio_init_all();
+
+    // инициализируем и настраиваем пины светодиода и кнопки
+    // подтягиваем кнопку к питанию
+    gpio_init(BUTTON_PIN);
+    gpio_set_dir(BUTTON_PIN, GPIO_IN);
+    gpio_pull_up(BUTTON_PIN);
+
+    gpio_init(LED_PIN);
+    gpio_set_dir(LED_PIN, GPIO_OUT);
+
+    // объявляем переменные
+    bool led = false;
+    bool previous = false;
 
     while (1)
     {
-        printf("Hello, world!\n");
-        sleep_ms(1000);
+        // читаем состояние пина кнопки с задержкой
+        bool current = get_button_debounce(BUTTON_PIN);
+
+        // если состояние сменилось — переключаем светодиод вызовом set_led
+        if (previous == true && current == false)
+        {
+            led = !led;
+            set_led(led);
+        }
+
+        previous = current;
     }
 }
