@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
-#include "led/led.h"
+#include "led.h"
 
 const uint BUTTON_PIN = 15;
 const uint DEBOUNCE_MS = 20;
