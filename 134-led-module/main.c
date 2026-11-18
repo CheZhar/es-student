@@ -1,13 +1,13 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include "led.h"
+#include "log.h"
 
 const uint BUTTON_PIN = 15;
 const uint DEBOUNCE_MS = 20;
 
 bool get_button_debounce(uint pin)
 {
-    // читаем вывод устойчиво к дребезгу
     bool state = gpio_get(pin);
     sleep_ms(DEBOUNCE_MS);
     return state && gpio_get(pin);
@@ -18,16 +18,20 @@ void handle_command(int command)
     if (command == 'e')
     {
         led_set(true);
-        printf("led %s\n", led_is_on() ? "on" : "off");
+        LOG_INF("led on\n");
     }
     else if (command == 'd')
     {
         led_set(false);
-        printf("led %s\n", led_is_on() ? "on" : "off");
+        LOG_INF("led off\n");
+    }
+    else if (command == 'v')
+    {
+        log_version();
     }
     else
     {
-        printf("unknown command: %c\n", command);
+        LOG_ERR("unknown command: %c\n", command);
     }
 }
 
@@ -54,7 +58,7 @@ int main()
         if (previous == true && current == false)
         {
             led_toggle();
-            printf("led %s\n", led_is_on() ? "on" : "off");
+            LOG_INF("led %s\n", led_is_on() ? "on" : "off");
         }
 
         previous = current;
@@ -65,7 +69,7 @@ int main()
         {
             continue;
         }
-
+        LOG_DBG("got %c\n", command);
         handle_command(command);
     }
 }
