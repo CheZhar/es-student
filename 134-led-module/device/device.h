@@ -14,7 +14,6 @@
 #include <log.h>
 #include <stdio.h> // Добавлено для printf (понадобится в device.c)
 
-// Только объявление функции (без тела {})
 void log_version(void);
 
 void device_info(void);
